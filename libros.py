@@ -1,9 +1,7 @@
+from flask import Flask, render_template, jsonify, request
 import os
 import pandas as pd
 
-# =====================================================================
-# RUTA DEL ARCHIVO: Localiza el CSV en la misma carpeta que este script
-# =====================================================================
 CARPETA_DEL_SCRIPT = os.path.dirname(os.path.abspath(__file__))
 RUTA_CSV = os.path.join(CARPETA_DEL_SCRIPT, "libros.csv")
 
@@ -22,17 +20,10 @@ class Biblioteca:
         self.ruta_csv = ruta_csv
         self.df = None  # DataFrame de Pandas donde se almacena la información
         
-        # -----------------------------------------------------------------
-        # REQUISITO EXIGIDO: Lista vacía que almacena los favoritos en memoria.
-        # Empieza con 0 elementos porque el usuario aún no ha pulsado ningún botón en la web.
-        # -----------------------------------------------------------------
         self.favoritos = []
         
         self.cargar_datos()
 
-    # =====================================================================
-    # ● LECTURA DEL CSV CON PANDAS (Datos 100% Reales)
-    # =====================================================================
     def cargar_datos(self):
         """
         Lee el archivo CSV directamente usando Pandas.
@@ -42,9 +33,6 @@ class Biblioteca:
         if not os.path.exists(self.ruta_csv):
             raise FileNotFoundError(f"¡Error! No se encuentra el archivo en: {self.ruta_csv}")
 
-        # -----------------------------------------------------------------
-        # SISTEMA DE AUTOLIMPIEZA: Elimina marcas como <<<<<<< HEAD del CSV
-        # -----------------------------------------------------------------
         try:
             with open(self.ruta_csv, 'r', encoding='utf-8', errors='ignore') as f:
                 lineas = f.readlines()
@@ -98,9 +86,6 @@ class Biblioteca:
         if 'Puntuacion' in self.df.columns:
             self.df['Puntuacion'] = pd.to_numeric(self.df['Puntuacion'], errors='coerce').fillna(0.0)
 
-    # =====================================================================
-    # ● ESCRITURA DEL CSV CON PANDAS (Obligatorio)
-    # =====================================================================
     def guardar_datos(self):
         """
         Guarda los datos que están en memoria de vuelta en vuestro archivo libros.csv.
@@ -108,9 +93,6 @@ class Biblioteca:
         self.df.to_csv(self.ruta_csv, index=False)
 
 
-    # =====================================================================
-    # ● INTERACCIÓN CON EL BOTÓN DE LA WEB (Favoritos dinámicos)
-    # =====================================================================
     def agregar_favorito(self, libro_id):
         """
         Añade el ID de un libro a la lista de favoritos si no está ya guardado.
@@ -168,13 +150,8 @@ class Biblioteca:
 
     # 5. Cantidad de favoritos (Lista vacía + Conteo tradicional con len)
     def obtener_cantidad_favoritos(self):
-        """
-        Devuelve el número total de favoritos basándose únicamente
-        en la cantidad de elementos almacenados en la lista temporal.
-        """
-        # Contamos cuántos elementos tiene nuestra lista favorita usando len()
         cantidad = len(self.favoritos)
-        return {"cantidad_favoritos": cantidad}
+        return cantidad
 
     # 6. Top 5 elementos más caros
     def obtener_top_5_mas_caros(self):
@@ -184,27 +161,61 @@ class Biblioteca:
         # Ordenamos la tabla de mayor a menor precio y cogemos los 5 primeros
         top_df = self.df.sort_values(by='Precio', ascending=False).head(5)
         lista_top = top_df[['Titulo', 'Precio']].to_dict(orient='records')
-        return {"top_5_mas_caros": lista_top}
+        return lista_top 
 
+app = Flask(__name__)
 
-# =====================================================================
-#  PRUEBA ESTÁTICA EN TU TERMINAL (Muestra solo los datos iniciales)
-# =====================================================================
+try:
+    biblioteca = Biblioteca()
+        
+except FileNotFoundError as e:
+    print(e)
+
+@app.route("/")
+def inicio():
+    return render_template("index.html")
+
+@app.route("/guardar", methods=["POST"])
+def guardar():
+    return jsonify({"mensaje":"Datos guardados correctamente"})
+
+#Enviar ltodos los libros y stats de la pagina principal
+@app.route("/libros", methods=["GET"])
+def enviar_todos_los_libros(): #Incluir estadisticas y mostrar en la pagina principal
+    if not biblioteca:
+        return jsonify({"error": "Base de datos no inicializada"}), 500
+    
+    lista_libros = biblioteca.df.fillna("").to_dict(orient='records')
+
+    estadisticas = {
+        "total":biblioteca.obtener_total_registros(),
+        "promedio_precio":biblioteca.obtener_promedio_precios(),
+        "mas_caro":biblioteca.obtener_elemento_mas_caro(),
+        "categoria_mas_utilizada":biblioteca.obtener_categoria_mas_utilizada(),
+        "cantidad_favoritos": biblioteca.obtener_cantidad_favoritos(),
+        "top_5_mas_caros": biblioteca.obtener_top_5_mas_caros()
+    }
+    
+    return jsonify({
+        "libros": lista_libros,
+        "estadisticas": estadisticas
+    })
+
+@app.route("/libro/<id>", methods=["GET"])
+def enviar_un_libro(id):
+    pass
+
+@app.route("/añadirFav/<id>", methods=["PUT"])
+def añadir_favorito(id):
+    pass
+
+@app.route("/eliminarLibro/<id>", methods=["DELETE"])
+def eliminar_libro(id):
+    pass
+
+@app.route("/libro", methods=["POST"])
+def añadir_libro():
+    pass
+
 if __name__ == "__main__":
-    try:
-        biblioteca = Biblioteca()
-        
-        print("==============================================")
-        print("📈 ESTADÍSTICAS REALES - LA MORADA DEL LIBRO")
-        print("==============================================")
-        print(f"1. Total Registros:       {biblioteca.obtener_total_registros()}")
-        print(f"2. Promedio de Precios:   {biblioteca.obtener_promedio_precios()}")
-        print(f"3. Libro Más Caro:        {biblioteca.obtener_elemento_mas_caro()}")
-        print(f"4. Género Más Usado:      {biblioteca.obtener_categoria_mas_utilizada()}")
-        
-        # Al arrancar de cero, como el usuario no ha pulsado nada en la web, mostrará un limpio "0"
-        print(f"5. Total Favoritos:       {biblioteca.obtener_cantidad_favoritos()}")
-        print("==============================================\n")
-        
-    except FileNotFoundError as e:
-        print(e)
+    app.run()
