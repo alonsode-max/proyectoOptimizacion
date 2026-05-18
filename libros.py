@@ -161,10 +161,15 @@ class Biblioteca:
         # Ordenamos la tabla de mayor a menor precio y cogemos los 5 primeros
         top_df = self.df.sort_values(by='Precio', ascending=False).head(5)
         lista_top = top_df[['Titulo', 'Precio']].to_dict(orient='records')
-        return lista_top
-
+        return lista_top 
 
 app = Flask(__name__)
+
+try:
+    biblioteca = Biblioteca()
+        
+except FileNotFoundError as e:
+    print(e)
 
 @app.route("/")
 def inicio():
@@ -174,9 +179,27 @@ def inicio():
 def guardar():
     return jsonify({"mensaje":"Datos guardados correctamente"})
 
+#Enviar ltodos los libros y stats de la pagina principal
 @app.route("/libros", methods=["GET"])
 def enviar_todos_los_libros(): #Incluir estadisticas y mostrar en la pagina principal
-    pass
+    if not biblioteca:
+        return jsonify({"error": "Base de datos no inicializada"}), 500
+    
+    lista_libros = biblioteca.df.fillna("").to_dict(orient='records')
+
+    estadisticas = {
+        "total":biblioteca.obtener_total_registros(),
+        "promedio_precio":biblioteca.obtener_promedio_precios(),
+        "mas_caro":biblioteca.obtener_elemento_mas_caro(),
+        "categoria_mas_utilizada":biblioteca.obtener_categoria_mas_utilizada(),
+        "cantidad_favoritos": biblioteca.obtener_cantidad_favoritos(),
+        "top_5_mas_caros": biblioteca.obtener_top_5_mas_caros()
+    }
+    
+    return jsonify({
+        "libros": lista_libros,
+        "estadisticas": estadisticas
+    })
 
 @app.route("/libro/<id>", methods=["GET"])
 def enviar_un_libro(id):
@@ -195,8 +218,4 @@ def añadir_libro():
     pass
 
 if __name__ == "__main__":
-    try:
-        biblioteca = Biblioteca()
-        
-    except FileNotFoundError as e:
-        print(e)
+    app.run()
