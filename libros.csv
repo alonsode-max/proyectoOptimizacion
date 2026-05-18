@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 id,Titulo,ISBN,Autor,Sinopsis,Genero,Editorial,Numero de paginas,Serie,fecha de publicación,Precio,Estado,Puntuacion,Favorito,Ventas
 1,Don Quijote de la Mancha,9788420412146,Miguel de Cervantes,Las aventuras de un caballero loco y su fiel escudero.,Clásico,Alfaguara,1032,No,1605-01-16,25.63,Disponible,3.9,No,32
 2,Cien años de soledad,9788439733478,Gabriel García Márquez,La historia de las generaciones de la familia Buendía en Macondo.,Realismo Mágico,Random House,496,No,1667-05-30,14.91,Disponible,4.8,No,61
@@ -257,7 +256,6 @@ id,Titulo,ISBN,Autor,Sinopsis,Genero,Editorial,Numero de paginas,Serie,fecha de 
 255,Estrella distante,9788433966773,Roberto Bolaño,La búsqueda de un siniestro poeta implicado en crímenes políticos.,Novela,Anagrama,160,No,1996-01-01,8.19,Disponible,4.4,No,40
 256,Nocturno de Chile,9788433968227,Roberto Bolaño,Un sacerdote moribundo repasa su polémica vida y complicidad política.,Novela,Anagrama,160,No,2000-01-01,8.19,Disponible,3.7,No,9
 257,Llamadas telefónicas,9788433910622,Roberto Bolaño,Una excelente colección de cuentos marcados por la melancolía.,Relatos,Anagrama,208,No,1997-01-01,9.15,Disponible,4.1,Si,55
-=======
 ID,Titulo,ISBN,Autor,Sinopsis,Genero,Editorial,Numero de paginas,Serie,fecha de publicación,Precio
 1,Don Quijote de la Mancha,9788420412146,Miguel de Cervantes,Las aventuras de un caballero loco y su fiel escudero.,Clásico,Alfaguara,1032,No,1605-01-16,22.95
 2,Cien años de soledad,9788439733478,Gabriel García Márquez,La historia de las generaciones de la familia Buendía en Macondo.,Realismo Mágico,Random House,496,No,1667-05-30,18.90
@@ -459,4 +457,3 @@ ID,Titulo,ISBN,Autor,Sinopsis,Genero,Editorial,Numero de paginas,Serie,fecha de 
 198,Mansfield Park,9788415618430,Jane Austen,Una joven humilde se cría con sus tíos ricos aprendiendo virtudes.,Romance Clásico,Alba Editorial,512,No,1814-05-09,13.50
 199,Emma,9788415618188,Jane Austen,Una joven rica juega a ser celestina provocando enredos amorosos.,Romance Clásico,Alba Editorial,544,No,1815-12-23,13.50
 200,Persuasión,9788415618201,Jane Austen,Una mujer reencuentra al amor de su vida tras rechazarlo años atrás.,Romance Clásico,Alba Editorial,320,No,1817-12-20,11.50
->>>>>>> 0423f42ee197100316c5f8d7be6f048eb5c7e6de
