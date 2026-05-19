@@ -1,18 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
+<<!DOCTYPE html>
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La morada del libro</title>
+    <link rel="stylesheet" href="../static/index.css">
 </head>
 
 <body>
+
     <header>
-        <p>Home</p>
-        <p>Search</p>
+        <h1>La morada del libro</h1>
     </header>
-    <h1>Titulo</h1>
+
+    <!-- ESTADÍSTICAS -->
+    <section id="estadisticas">
+        <h2>Estadísticas</h2>
+        <p id="total"></p>
+        <p id="promedio"></p>
+        <p id="masCaro"></p>
+        <p id="categoria"></p>
+        <p id="top5"></p>
+        <p id="favoritos"></p>
+    </section>
+
+    <!-- BUSCADOR -->
+    <section id="buscador">
+        <input type="text" id="buscar" placeholder="Buscar libro por título...">
+        <button id="btnBuscar">Buscar</button>
+    </section>
+
+    <!-- LISTA DE LIBROS -->
+    <section id="listaLibros">
+        Cargando libros...
+    </section>
+
+    <script src="../static/index.js"></script>
 </body>
 
 </html>
