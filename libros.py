@@ -203,6 +203,10 @@ def verificar_biblioteca() -> Any:
 def inicio() -> str:
     return render_template("libro.html")
 
+@app.route("/ver-libro")
+def ver_libro() -> str:
+    return render_template("libro.html")
+
 
 @app.route("/guardar", methods=["POST"])
 def guardar() -> Response:

@@ -123,3 +123,73 @@ body {
     word-break: break-word;
     hyphens: auto;
 }
+
+#btn-favorito {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 32px;
+    padding: 14px 24px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: 1px solid transparent;
+}
+
+/* Estado 1: Añadir a Favoritos (Estilo principal/Acción) */
+#btn-favorito:not(.eliminar),
+#btn-favorito[onclick*="Añadir"],
+#btn-favorito:contains("Añadir") {
+    background-color: #0f172a;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+}
+
+#btn-favorito:not(.eliminar):hover {
+    background-color: #1e293b;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2);
+}
+
+/* Estado 2: Eliminar de Favoritos (Estilo secundario/Peligro tenue) */
+/* Nota: Si el texto contiene 'X Eliminar', aplicará este estilo automáticamente */
+#btn-favorito[onclick*="Eliminar"],
+#btn-favorito:has(text:contains("Eliminar")) {
+    background-color: #fff1f2;
+    color: #e11d48;
+    border: 1px solid #ffe4e6;
+}
+
+#btn-favorito[onclick*="Eliminar"]:hover {
+    background-color: #ffe4e6;
+    color: #be123c;
+    transform: translateY(-2px);
+}
+
+/* Efecto al hacer clic (Feedback táctil) */
+#btn-favorito:active {
+    transform: translateY(0);
+}
+
+
+/* Clases de apoyo para asegurar el cambio estético */
+#btn-favorito.añadir {
+    background-color: #0f172a;
+    color: white;
+}
+
+#btn-favorito.eliminar {
+    background-color: #fff1f2;
+    color: #e11d48;
+    border-color: #ffe4e6;
+}
+
+#btn-favorito.eliminar:hover {
+    background-color: #ffe4e6;
+    color: #be123c;
+}

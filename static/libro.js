@@ -22,16 +22,17 @@ function renderizarLibro(libro) {
     if (libro.Serie !== "No") {
         infoLibro += `<h3 id="serie">${libro.Serie} </h3>`
     }
+
     if (libro.Favorito) {
         infoLibro += `
-        <button id="btn-favorito" onclick="modificarFavorito(${libro.id})">
-            X Eliminar de Favoritos
-        </button>`
+    <button id="btn-favorito" class="eliminar" onclick="modificarFavorito(${libro.id})">
+        ❌ Eliminar de Favoritos
+    </button>`
     } else {
         infoLibro += `
-        <button id="btn-favorito" onclick="modificarFavorito(${libro.id})">
-            ❤️ Añadir a Favoritos
-        </button>`
+    <button id="btn-favorito" class="añadir" onclick="modificarFavorito(${libro.id})">
+        ❤️ Añadir a Favoritos
+    </button>`
     }
     contenedor.innerHTML = infoLibro
 }
@@ -53,3 +54,15 @@ async function modificarFavorito(id) {
         alert("Ocurrió un error al conectar con el servidor.")
     }
 }
+
+// EXTRAER EL ID DE LA URL
+document.addEventListener("DOMContentLoaded", () => {
+    const parametrosURL = new URLSearchParams(window.location.search);
+    const libroId = parametrosURL.get("id");
+
+    if (libroId) {
+        pedirLibro(libroId);
+    } else {
+        contenedor.innerHTML = "<h2>Error: No se ha seleccionado ningún libro.</h2>";
+    }
+});
