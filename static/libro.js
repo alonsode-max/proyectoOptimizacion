@@ -44,7 +44,7 @@ async function modificarFavorito(id) {
         const resultado = await respuesta.json()
 
         if (respuesta.ok) {
-            pedirLibro(1)
+            pedirLibro(id)
         } else {
             alert(resultado.error || "No se pudo añadir a favoritos.")
         }
@@ -53,5 +53,3 @@ async function modificarFavorito(id) {
         alert("Ocurrió un error al conectar con el servidor.")
     }
 }
-
-pedirLibro(1)

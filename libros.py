@@ -201,7 +201,7 @@ def verificar_biblioteca() -> Any:
 
 @app.route("/")
 def inicio() -> str:
-    return render_template("index.html")
+    return render_template("libro.html")
 
 
 @app.route("/guardar", methods=["POST"])
