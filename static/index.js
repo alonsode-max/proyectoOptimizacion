@@ -44,7 +44,7 @@ function renderizarLibros(libros) {
 }
 
 async function marcarFavorito(id) {
-    await fetch(`http://127.0.0.1:5000/añadirFav/${id}`, { method: "PUT" })
+    await fetch(`http://127.0.0.1:5000/modifFav/${id}`, { method: "PUT" })
     cargarLibros()
 }
 
