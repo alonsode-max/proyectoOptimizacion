@@ -29,7 +29,7 @@ function renderizarLibros(libros) {
         card.className = "tarjeta"
 
         card.innerHTML = `
-            <h3>${libro.Titulo}</h3>
+            <h3><a href="/ver-libro?id=${libro.id}" style="text-decoration: none; color: inherit;">${libro.Titulo}</a></h3>
             <p>${libro.Autor}</p>
             <p><strong>${libro.Genero}</strong></p>
             <p>${libro.Precio} €</p>
@@ -44,12 +44,9 @@ function renderizarLibros(libros) {
 }
 
 async function marcarFavorito(id) {
-    // ESTA ES LA RUTA CORRECTA SEGÚN TU PYTHON
     await fetch(`http://127.0.0.1:5000/modifFav/${id}`, {
         method: "PUT"
     })
-
-    // Recargar lista y estadísticas
     pedirLibros()
 }
 
