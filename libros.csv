@@ -1,4 +1,4 @@
-ID,Titulo,ISBN,Autor,Sinopsis,Genero,Editorial,Numero de paginas,Serie,fecha de publicación,Precio
+id,Titulo,ISBN,Autor,Sinopsis,Genero,Editorial,Numero de paginas,Serie,Fecha,Precio
 1,Don Quijote de la Mancha,9788420412146,Miguel de Cervantes,Las aventuras de un caballero loco y su fiel escudero.,Clásico,Alfaguara,1032,No,1605-01-16,22.95
 2,Cien años de soledad,9788439733478,Gabriel García Márquez,La historia de las generaciones de la familia Buendía en Macondo.,Realismo Mágico,Random House,496,No,1667-05-30,18.90
 3,1984,9788499890944,George Orwell,Un futuro distópico donde el Gran Hermano vigila todo.,Distopía,Debolsillo,352,No,1949-06-08,9.95
