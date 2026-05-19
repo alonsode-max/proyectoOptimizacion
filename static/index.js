@@ -1,25 +1,24 @@
 const lista = document.getElementById("listaLibros")
-const buscar = document.getElementById("buscar")
-const btnBuscar = document.getElementById("btnBuscar")
+const buscarNombre = document.getElementById("buscarNombre")
+const filtrarGenero = document.getElementById("filtrarGenero")
+const precioMax = document.getElementById("precioMax")
+const ordenar = document.getElementById("ordenar")
+const btnFiltrar = document.getElementById("btnFiltrar")
 
-async function cargarLibros() {
-    const ans = await fetch("http://127.0.0.1:5000/libros")
+async function pedirLibros() {
+    const params = new URLSearchParams()
+
+    if (buscarNombre.value) params.append("nombre", buscarNombre.value)
+    if (filtrarGenero.value) params.append("genero", filtrarGenero.value)
+    if (precioMax.value) params.append("precio_max", precioMax.value)
+    if (ordenar.value) params.append("orden", ordenar.value)
+
+    const ans = await fetch(`http://127.0.0.1:5000/libros?${params.toString()}`)
     const data = await ans.json()
 
-    mostrarEstadisticas(data.estadisticas)
     renderizarLibros(data.libros)
-}
-
-function mostrarEstadisticas(est) {
-    document.getElementById("total").textContent = "Total libros: " + est.total
-    document.getElementById("promedio").textContent = "Promedio precio: " + est.promedio_precio + "€"
-    document.getElementById("masCaro").textContent = "Más caro: " + est.mas_caro
-    document.getElementById("categoria").textContent = "Categoría más usada: " + est.categoria_mas_utilizada
-
-    let top = est.top_5_mas_caros.map(l => l.Titulo + " (" + l.Precio + "€)").join(", ")
-    document.getElementById("top5").textContent = "Top 5 más caros: " + top
-
-    document.getElementById("favoritos").textContent = "Favoritos marcados: " + est.cantidad_favoritos
+    renderizarEstadisticas(data.estadisticas)
+    cargarGeneros(data.libros)
 }
 
 function renderizarLibros(libros) {
@@ -32,11 +31,12 @@ function renderizarLibros(libros) {
         card.innerHTML = `
             <h3>${libro.Titulo}</h3>
             <p>${libro.Autor}</p>
-            <p>${libro.Genero}</p>
+            <p><strong>${libro.Genero}</strong></p>
             <p>${libro.Precio} €</p>
             <button class="favBtn">⭐ Favorito</button>
         `
 
+        // BOTÓN DE FAVORITOS FUNCIONAL
         card.querySelector(".favBtn").onclick = () => marcarFavorito(libro.id)
 
         lista.appendChild(card)
@@ -44,23 +44,33 @@ function renderizarLibros(libros) {
 }
 
 async function marcarFavorito(id) {
-    await fetch(`http://127.0.0.1:5000/modifFav/${id}`, { method: "PUT" })
-    cargarLibros()
+    // ESTA ES LA RUTA CORRECTA SEGÚN TU PYTHON
+    await fetch(`http://127.0.0.1:5000/modifFav/${id}`, {
+        method: "PUT"
+    })
+
+    // Recargar lista y estadísticas
+    pedirLibros()
 }
 
-btnBuscar.onclick = () => {
-    filtrarPorTitulo()
+function renderizarEstadisticas(est) {
+    document.getElementById("totalLibros").textContent = `Total libros: ${est.total}`
+    document.getElementById("promedioPrecio").textContent = `Precio medio: ${est.promedio_precio} €`
+    document.getElementById("categoriaMas").textContent = `Género más usado: ${est.categoria_mas_utilizada}`
+    document.getElementById("masCaro").textContent = `Más caro: ${est.mas_caro}`
+    document.getElementById("cantidadFav").textContent = `Favoritos marcados: ${est.cantidad_favoritos}`
 }
 
-function filtrarPorTitulo() {
-    const texto = buscar.value.toLowerCase()
+function cargarGeneros(libros) {
+    const generos = [...new Set(libros.map(l => l.Genero))]
 
-    const tarjetas = document.querySelectorAll(".tarjeta")
+    filtrarGenero.innerHTML = `<option value="">Género</option>`
 
-    tarjetas.forEach(t => {
-        const titulo = t.querySelector("h3").textContent.toLowerCase()
-        t.style.display = titulo.includes(texto) ? "block" : "none"
+    generos.forEach(g => {
+        filtrarGenero.innerHTML += `<option value="${g}">${g}</option>`
     })
 }
 
-cargarLibros()
+btnFiltrar.onclick = pedirLibros
+
+pedirLibros()
