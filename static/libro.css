@@ -1,6 +1,5 @@
 body {
     background-color: #f8fafc;
-    /* Gris muy claro, limpio y descansado para la vista */
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     display: flex;
     justify-content: center;
@@ -63,7 +62,7 @@ body {
     font-weight: 400;
     margin: 12px 0;
     display: flex;
-    justify-content: 间;
+    justify-content: space-between;
     border-bottom: 1px dashed #e2e8f0;
     padding-bottom: 8px;
 }

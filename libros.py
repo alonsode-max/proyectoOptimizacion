@@ -73,7 +73,7 @@ class Biblioteca:
         self.df.to_csv(self.ruta_csv, index=False)
 
     def agregar_favorito(self, libro_id: int) -> None:
-        """Añade un ID a la lista de favoritos de forma única."""
+        """Añade un ID a la lista de favoritos."""
         if libro_id not in self.favoritos:
             self.favoritos.append(libro_id)
 
@@ -274,18 +274,27 @@ def enviar_todos_los_libros() -> Response:
 def enviar_un_libro(libro_id: int) -> Any:
     libro: Any = biblioteca.obtener_libro(libro_id)
     if libro:
+        if libro_id in biblioteca.favoritos:
+            libro['Favorito']=True
         return jsonify(libro)
     return jsonify({"error": f"Libro con ID {libro_id} no encontrado"}), 404
 
 
-@app.route("/añadirFav/<int:libro_id>", methods=["PUT"])
-def añadir_favorito(libro_id: int) -> Any:
+@app.route("/modifFav/<int:libro_id>", methods=["PUT"])
+def modificar_favorito(libro_id: int) -> Any:
     if libro_id in biblioteca.df['id'].values:
-        biblioteca.agregar_favorito(libro_id)
-        return jsonify({
-            "mensaje": f"Libro añadido a favoritos con éxito",
-            "cantidad_favoritos": biblioteca.obtener_cantidad_favoritos()
-        })
+        if libro_id in biblioteca.favoritos:
+            biblioteca.eliminar_favorito(libro_id)
+            return jsonify({
+                "mensaje": f"Libro eliminado de favoritos con éxito",
+                "cantidad_favoritos": biblioteca.obtener_cantidad_favoritos()
+            })
+        else:
+            biblioteca.agregar_favorito(libro_id)
+            return jsonify({
+                "mensaje": f"Libro añadido a favoritos con éxito",
+                "cantidad_favoritos": biblioteca.obtener_cantidad_favoritos()
+            })
     return jsonify({"error": "El libro que intentas marcar no existe en el catálogo"}), 404
 
 
