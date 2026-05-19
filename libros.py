@@ -7,11 +7,6 @@ RUTA_CSV = os.path.join(CARPETA_DEL_SCRIPT, "libros.csv")
 
 
 class Biblioteca:
-    """
-    Clase que gestiona la base de datos de "La Morada del Libro"
-    utilizando Programación Orientada a Objetos (POO) y la librería Pandas.
-    """
-
     def __init__(self, ruta_csv=RUTA_CSV):
         """
         Constructor de la clase. Inicializa la ruta, carga los datos del CSV
@@ -59,19 +54,17 @@ class Biblioteca:
         
         # Corregimos de forma automática si alguna columna clave está en minúsculas
         mapeo_columnas = {
+            'id':'id',
             'titulo': 'Titulo',
             'isbn': 'ISBN',
             'autor': 'Autor',
             'sinopsis': 'Sinopsis',
             'genero': 'Genero',
             'editorial': 'Editorial',
-            'numero de paginas': 'Numero de paginas',
+            'numero de paginas': 'Numero_pag',
             'serie': 'Serie',
-            'fecha de publicacion': 'fecha de publicación',
-            'precio': 'Precio',
-            'estado': 'Estado',
-            'puntuacion': 'Puntuacion',
-            'favorito': 'Favorito'
+            'fecha': 'Fecha',
+            'precio': 'Precio'
         }
         # Renombramos las columnas si coincide alguna en minúscula
         self.df.rename(columns=lambda x: mapeo_columnas.get(x.lower(), x), inplace=True)
@@ -87,29 +80,52 @@ class Biblioteca:
             self.df['Puntuacion'] = pd.to_numeric(self.df['Puntuacion'], errors='coerce').fillna(0.0)
 
     def guardar_datos(self):
-        """
-        Guarda los datos que están en memoria de vuelta en vuestro archivo libros.csv.
-        """
         self.df.to_csv(self.ruta_csv, index=False)
 
 
     def agregar_favorito(self, libro_id):
-        """
-        Añade el ID de un libro a la lista de favoritos si no está ya guardado.
-        Esta función se llamará automáticamente cuando pulsen el botón en la web.
-        """
         id_num = int(libro_id)
         if id_num not in self.favoritos:
             self.favoritos.append(id_num)
 
     def eliminar_favorito(self, libro_id):
-        """
-        Retira el ID de un libro de la lista de favoritos.
-        Esta función se llamará automáticamente cuando desmarquen el botón en la web.
-        """
         id_num = int(libro_id)
         if id_num in self.favoritos:
             self.favoritos.remove(id_num)
+
+    def obtener_libro(self, libro_id):
+        id_num = int(libro_id)
+        fila = self.df[self.df['id'] == id_num]
+        if fila.empty:
+            return None
+        return fila.fillna("").to_dict(orient='records')[0]
+
+    def crear_libro_db(self, datos):
+        # Generar ID consecutivo automático
+        nuevo_id = int(self.df['id'].max() + 1) if not self.df.empty else 1
+        datos['id'] = nuevo_id
+        
+        # Forzar tipos de datos correctos para evitar inconsistencias en el DataFrame
+        if 'Precio' in datos:
+            datos['Precio'] = pd.to_numeric(datos['Precio'], errors='coerce')
+        if 'Puntuacion' in datos:
+            datos['Puntuacion'] = pd.to_numeric(datos['Puntuacion'], errors='coerce')
+
+        # Convertir el nuevo registro en DataFrame y concatenarlo
+        nuevo_df = pd.DataFrame([datos])
+        self.df = pd.concat([self.df, nuevo_df], ignore_index=True)
+        self.guardar_datos()
+        return datos
+
+    def eliminar_libro_db(self, libro_id):
+        """Elimina el libro del DataFrame y de favoritos si existiera."""
+        id_num = int(libro_id)
+        if id_num in self.df['id'].values:
+            self.df = self.df[self.df['id'] != id_num]
+            self.eliminar_favorito(id_num) # Limpieza preventiva en favoritos
+            self.guardar_datos()
+            return True
+        return False
 
 
     # =====================================================================
@@ -163,35 +179,39 @@ class Biblioteca:
         lista_top = top_df[['Titulo', 'Precio']].to_dict(orient='records')
         return lista_top 
 
+
 app = Flask(__name__)
 
 try:
     biblioteca = Biblioteca()
-        
 except FileNotFoundError as e:
     print(e)
+    biblioteca = None
 
 @app.route("/")
 def inicio():
-    return render_template("index.html")
+    return render_template("libro.html")
 
 @app.route("/guardar", methods=["POST"])
 def guardar():
-    return jsonify({"mensaje":"Datos guardados correctamente"})
+    if biblioteca:
+        biblioteca.guardar_datos()
+        return jsonify({"mensaje": "Datos guardados correctamente en el CSV"})
+    return jsonify({"error": "Base de datos no disponible"}), 500
 
-#Enviar ltodos los libros y stats de la pagina principal
+# Enviar todos los libros y stats de la pagina principal
 @app.route("/libros", methods=["GET"])
-def enviar_todos_los_libros(): #Incluir estadisticas y mostrar en la pagina principal
+def enviar_todos_los_libros(): 
     if not biblioteca:
         return jsonify({"error": "Base de datos no inicializada"}), 500
     
     lista_libros = biblioteca.df.fillna("").to_dict(orient='records')
 
     estadisticas = {
-        "total":biblioteca.obtener_total_registros(),
-        "promedio_precio":biblioteca.obtener_promedio_precios(),
-        "mas_caro":biblioteca.obtener_elemento_mas_caro(),
-        "categoria_mas_utilizada":biblioteca.obtener_categoria_mas_utilizada(),
+        "total": biblioteca.obtener_total_registros(),
+        "promedio_precio": biblioteca.obtener_promedio_precios(),
+        "mas_caro": biblioteca.obtener_elemento_mas_caro(),
+        "categoria_mas_utilizada": biblioteca.obtener_categoria_mas_utilizada(),
         "cantidad_favoritos": biblioteca.obtener_cantidad_favoritos(),
         "top_5_mas_caros": biblioteca.obtener_top_5_mas_caros()
     }
@@ -203,19 +223,59 @@ def enviar_todos_los_libros(): #Incluir estadisticas y mostrar en la pagina prin
 
 @app.route("/libro/<id>", methods=["GET"])
 def enviar_un_libro(id):
-    pass
+    if not biblioteca:
+        return jsonify({"error": "Base de datos no inicializada"}), 500
+    try:
+        libro = biblioteca.obtener_libro(id)
+        if libro:
+            return jsonify(libro)
+        return jsonify({"error": f"Libro con ID {id} no encontrado"}), 404
+    except ValueError:
+        return jsonify({"error": "El ID proporcionado no es válido"}), 400
 
 @app.route("/añadirFav/<id>", methods=["PUT"])
 def añadir_favorito(id):
-    pass
+    if not biblioteca:
+        return jsonify({"error": "Base de datos no inicializada"}), 500
+    try:
+        id_num = int(id)
+        # Comprobamos si el libro realmente existe en el catálogo antes de añadirlo
+        if id_num in biblioteca.df['id'].values:
+            biblioteca.agregar_favorito(id_num)
+            return jsonify({
+                "mensaje": f"Libro con ID {id} añadido a favoritos con éxito",
+                "cantidad_favoritos": biblioteca.obtener_cantidad_favoritos()
+            })
+        return jsonify({"error": "El libro que intentas marcar no existe en el catálogo"}), 404
+    except ValueError:
+        return jsonify({"error": "El ID proporcionado no es válido"}), 400
 
 @app.route("/eliminarLibro/<id>", methods=["DELETE"])
 def eliminar_libro(id):
-    pass
+    if not biblioteca:
+        return jsonify({"error": "Base de datos no inicializada"}), 500
+    try:
+        exito = biblioteca.eliminar_libro_db(id)
+        if exito:
+            return jsonify({"mensaje": f"Libro con ID {id} eliminado correctamente"})
+        return jsonify({"error": f"No se encontró ningún libro con ID {id}"}), 404
+    except ValueError:
+        return jsonify({"error": "El ID proporcionado no es válido"}), 400
 
 @app.route("/libro", methods=["POST"])
 def añadir_libro():
-    pass
+    if not biblioteca:
+        return jsonify({"error": "Base de datos no inicializada"}), 500
+    
+    datos = request.get_json()
+    if not datos or 'Titulo' not in datos:
+        return jsonify({"error": "Faltan datos obligatorios. El campo 'Titulo' es requerido."}), 400
+    
+    nuevo_libro = biblioteca.crear_libro_db(datos)
+    return jsonify({
+        "mensaje": "Libro creado y añadido correctamente",
+        "libro": nuevo_libro
+    }), 201
 
 if __name__ == "__main__":
     app.run()
