@@ -1,3 +1,4 @@
+/* ======== GENERAL ======== */
 body {
     margin: 0;
     padding: 0;
@@ -5,6 +6,7 @@ body {
     background-color: #f1f5f9;
 }
 
+/* ======== HEADER ======== */
 header {
     background-color: #1e293b;
     color: white;
@@ -12,34 +14,48 @@ header {
     text-align: center;
 }
 
-#estadisticas {
-    background-color: #e2e8f0;
-    padding: 20px;
-    margin: 20px;
-    border-radius: 12px;
-}
 
-#buscador {
+#filtros {
     display: flex;
-    justify-content: center;
     gap: 10px;
     padding: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    background-color: #e2e8f0;
+    border-bottom: 1px solid #cbd5e1;
 }
 
-#buscador input {
+#filtros input,
+#filtros select,
+#filtros button {
     padding: 10px;
-    width: 250px;
     border-radius: 8px;
     border: 1px solid #cbd5e1;
+    font-size: 1rem;
 }
 
-#buscador button {
-    padding: 10px 20px;
+#filtros button {
     background-color: #3b82f6;
     color: white;
-    border: none;
-    border-radius: 8px;
     cursor: pointer;
+    transition: 0.2s;
+}
+
+#filtros button:hover {
+    background-color: #2563eb;
+}
+
+
+#estadisticas {
+    padding: 20px;
+    background-color: #f8fafc;
+    border-top: 1px solid #cbd5e1;
+    border-bottom: 1px solid #cbd5e1;
+    margin-bottom: 20px;
+}
+
+#estadisticas h2 {
+    margin-top: 0;
 }
 
 #listaLibros {
@@ -49,13 +65,25 @@ header {
     gap: 20px;
 }
 
+
 .tarjeta {
     background-color: white;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: transform 0.2s;
 }
+
+.tarjeta:hover {
+    transform: scale(1.02);
+}
+
+.tarjeta h3 {
+    margin-top: 0;
+}
+
 
 .favBtn {
     margin-top: 10px;
@@ -64,4 +92,10 @@ header {
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    width: 100%;
+    font-weight: 600;
+}
+
+.favBtn:hover {
+    background-color: #eab308;
 }

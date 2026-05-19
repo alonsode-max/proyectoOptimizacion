@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -14,21 +14,38 @@
         <h1>La morada del libro</h1>
     </header>
 
+    <!-- FILTROS -->
+    <section id="filtros">
+        <input type="text" id="buscarNombre" placeholder="Buscar por título...">
+
+        <select id="filtrarGenero">
+            <option value="">Género</option>
+        </select>
+
+        <input type="number" id="precioMax" placeholder="Precio máximo">
+
+        <select id="ordenar">
+            <option value="">Ordenar por...</option>
+            <option value="alfa_asc">A-Z</option>
+            <option value="alfa_desc">Z-A</option>
+            <option value="precio_asc">Precio ↑</option>
+            <option value="precio_desc">Precio ↓</option>
+            <option value="paginas_asc">Páginas ↑</option>
+            <option value="paginas_desc">Páginas ↓</option>
+            <option value="reciente">Más reciente</option>
+        </select>
+
+        <button id="btnFiltrar">Aplicar filtros</button>
+    </section>
+
     <!-- ESTADÍSTICAS -->
     <section id="estadisticas">
         <h2>Estadísticas</h2>
-        <p id="total"></p>
-        <p id="promedio"></p>
+        <p id="totalLibros"></p>
+        <p id="promedioPrecio"></p>
+        <p id="categoriaMas"></p>
         <p id="masCaro"></p>
-        <p id="categoria"></p>
-        <p id="top5"></p>
-        <p id="favoritos"></p>
-    </section>
-
-    <!-- BUSCADOR -->
-    <section id="buscador">
-        <input type="text" id="buscar" placeholder="Buscar libro por título...">
-        <button id="btnBuscar">Buscar</button>
+        <p id="cantidadFav"></p>
     </section>
 
     <!-- LISTA DE LIBROS -->
